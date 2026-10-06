@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    url: jdbc:h2:file:./data/workwise;AUTO_SERVER=TRUE
+    username: sa
+    password:
+  jpa:
+    hibernate.ddl-auto: update
+    open-in-view: false
+  h2.console.enabled: false
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
+
+workwise:
+  cors-origin: ${CORS_ORIGIN:http://localhost:5173}
+  analysis:
+    # segundo minuto hora dia mês dia-da-semana → a cada hora cheia
+    cron: "0 0 * * * *"
+  feedback:
+    cron: "0 30 * * * *"   # a cada hora, aos 30 minutos
+  groq:
+    api-key: ${GROQ_API_KEY:}              # nunca versionar a chave; vem do ambiente
+    model: ${GROQ_MODEL:llama-3.3-70b-versatile}   # confira os modelos ativos em console.groq.com/docs/models
+    timeout: 30s
+  screening:
+    auto-reject: false                     # true = nota baixa recusa sozinha (não recomendado)
+    requirements: "Experiência prática comprovada com as tecnologias principais da vaga, boas práticas, testes e trabalho em equipe."
+  security:
+    jwt-secret: ${JWT_SECRET:}            # obrigatório, mínimo 32 caracteres
+    token-ttl: 8h
+    admin-email: ${ADMIN_EMAIL:}          # cria o primeiro usuário (só com a tabela vazia)
+    admin-password: ${ADMIN_PASSWORD:}    # mínimo 12 caracteres

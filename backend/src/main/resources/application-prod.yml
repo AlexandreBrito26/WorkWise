@@ -1,0 +1,9 @@
+server:
+  port: ${PORT:8080}
+  forward-headers-strategy: framework
+
+spring:
+  jpa:
+    hibernate.ddl-auto: update   # trocar por Flyway/Liquibase quando o esquema estabilizar
+    show-sql: false
+  h2.console.enabled: false
