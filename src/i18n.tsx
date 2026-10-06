@@ -1,0 +1,126 @@
+import { createContext, useContext, useState, type ReactNode } from 'react'
+
+export type Lang = 'pt' | 'en'
+
+const dict = {
+  pt: {
+    tagline: 'Inteligência em RH para sua equipe',
+    candidates: 'Candidatos',
+    resume: 'Currículo',
+    experience: 'Experiência',
+    skills: 'Habilidades',
+    match: 'Compatibilidade',
+    summary: 'Resumo técnico',
+    assistant: 'Assistente',
+    placeholder: 'Pergunte sobre o candidato selecionado…',
+    send: 'Enviar',
+    greeting: 'Olá! Posso resumir currículos, comparar candidatos e sugerir próximos passos.',
+    thinking: 'Pensando…',
+    aiOff: 'A IA está desativada no servidor (falta a chave do Groq).',
+    aiFail: 'Não consegui falar com a IA agora. Tente novamente em instantes.',
+    genericError: 'Algo deu errado. Tente novamente.',
+    mTotal: 'Candidatos',
+    mAvg: 'Nota média',
+    mShort: 'Pré-selecionados',
+    mDays: 'Dias até feedback',
+    status: { new: 'Novo', review: 'Em análise', shortlist: 'Pré-selecionado', rejected: 'Recusado' },
+    empty: 'Selecione um candidato para ver o currículo.',
+    pending: 'Aguardando análise. Use "Analisar agora" ou espere o próximo ciclo automático.',
+    shortlistAction: 'Pré-selecionar',
+    rejectAction: 'Recusar',
+    reviewAction: 'Voltar para análise',
+    analyzeNow: 'Analisar agora',
+    analyzing: 'Analisando…',
+    newCandidate: 'Novo candidato',
+    fName: 'Nome',
+    fEmail: 'E-mail',
+    fRole: 'Vaga',
+    fResume: 'Texto do currículo',
+    create: 'Cadastrar',
+    creating: 'Cadastrando…',
+    loading: 'Carregando…',
+    loadError: 'Não foi possível carregar os dados. O back-end está rodando?',
+    retry: 'Tentar de novo',
+    noCandidates: 'Nenhum candidato ainda.',
+    signIn: 'Entrar',
+    signingIn: 'Entrando…',
+    signOut: 'Sair',
+    fPassword: 'Senha',
+    invalidCreds: 'E-mail ou senha incorretos.',
+    tooMany: 'Muitas tentativas. Aguarde 15 minutos e tente de novo.',
+    fPdf: 'Currículo em PDF (até 5 MB)',
+    orPaste: 'ou cole o texto abaixo',
+    pdfError: 'Não consegui ler esse PDF. Ele precisa ter texto selecionável, sem senha e até 15 páginas.',
+    pdfTooBig: 'O arquivo passa de 5 MB.',
+    deleteAction: 'Excluir candidato',
+    confirmDelete: 'Excluir definitivamente os dados deste candidato? Esta ação não pode ser desfeita.',
+  },
+  en: {
+    tagline: 'HR intelligence for your team',
+    candidates: 'Candidates',
+    resume: 'Resume',
+    experience: 'Experience',
+    skills: 'Skills',
+    match: 'Match',
+    summary: 'Technical summary',
+    assistant: 'Assistant',
+    placeholder: 'Ask about the selected candidate…',
+    send: 'Send',
+    greeting: 'Hi! I can summarize resumes, compare candidates and suggest next steps.',
+    thinking: 'Thinking…',
+    aiOff: 'AI is disabled on the server (Groq key missing).',
+    aiFail: 'I could not reach the AI right now. Please try again shortly.',
+    genericError: 'Something went wrong. Please try again.',
+    mTotal: 'Candidates',
+    mAvg: 'Average score',
+    mShort: 'Shortlisted',
+    mDays: 'Days to feedback',
+    status: { new: 'New', review: 'In review', shortlist: 'Shortlisted', rejected: 'Rejected' },
+    empty: 'Select a candidate to view the resume.',
+    pending: 'Waiting for analysis. Use "Analyze now" or wait for the next automatic run.',
+    shortlistAction: 'Shortlist',
+    rejectAction: 'Reject',
+    reviewAction: 'Back to review',
+    analyzeNow: 'Analyze now',
+    analyzing: 'Analyzing…',
+    newCandidate: 'New candidate',
+    fName: 'Name',
+    fEmail: 'E-mail',
+    fRole: 'Role',
+    fResume: 'Resume text',
+    create: 'Add',
+    creating: 'Adding…',
+    loading: 'Loading…',
+    loadError: 'Could not load data. Is the back-end running?',
+    retry: 'Try again',
+    noCandidates: 'No candidates yet.',
+    signIn: 'Sign in',
+    signingIn: 'Signing in…',
+    signOut: 'Sign out',
+    fPassword: 'Password',
+    invalidCreds: 'Incorrect e-mail or password.',
+    tooMany: 'Too many attempts. Wait 15 minutes and try again.',
+    fPdf: 'Resume as PDF (up to 5 MB)',
+    orPaste: 'or paste the text below',
+    pdfError: 'I could not read this PDF. It needs selectable text, no password, and up to 15 pages.',
+    pdfTooBig: 'The file is larger than 5 MB.',
+    deleteAction: 'Delete candidate',
+    confirmDelete: 'Permanently delete this candidate\'s data? This cannot be undone.',
+  },
+} as const
+
+export type Dict = (typeof dict)['pt']
+
+type Ctx = { lang: Lang; setLang: (l: Lang) => void; t: Dict }
+const I18nContext = createContext<Ctx | null>(null)
+
+export function I18nProvider({ children }: { children: ReactNode }) {
+  const [lang, setLang] = useState<Lang>('pt')
+  return <I18nContext.Provider value={{ lang, setLang, t: dict[lang] as Dict }}>{children}</I18nContext.Provider>
+}
+
+export function useI18n() {
+  const ctx = useContext(I18nContext)
+  if (!ctx) throw new Error('useI18n must be used inside I18nProvider')
+  return ctx
+}
