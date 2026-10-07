@@ -36,6 +36,13 @@ npm run build    # gera dist/ (pronto para a Vercel)
 - **Mapa de talentos (Konva / canvas 2D):** cada candidato é uma bolha — eixo X = nota, eixo Y = nº de habilidades fortes (≥ 70%), cor = status, tamanho = quantidade de habilidades. Arraste, use a roda para zoom, duplo clique centraliza, clique abre o currículo. As cores vêm das variáveis CSS e acompanham o tema. Por ser canvas, a lista de candidatos é a alternativa acessível.
 - **Animações (Framer Motion):** entrada/saída na lista, troca de candidato e barras de habilidades. Respeita "reduzir movimento" do sistema.
 
+## Outras melhorias
+- **Exportar CSV** da lista filtrada (com proteção contra injeção de fórmula em planilhas).
+- **Anotações** privadas por candidato (entram no backup JSON).
+- **Comparar candidatos** com gráfico radar de habilidades.
+- **Teclado:** setas ↑/↓ navegam na lista e `/` foca a busca.
+- **Testes:** `npm test` (Vitest) cobre análise, requisitos, backup, CSV e regras de status.
+
 ## Deploy na Vercel
 Importe o repositório; o framework Vite é detectado. Não há variáveis de ambiente. O `vercel.json` já define cabeçalhos de segurança e uma CSP que só permite conexão com o próprio site e `api.groq.com`.
 

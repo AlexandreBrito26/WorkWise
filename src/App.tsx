@@ -68,7 +68,7 @@ export default function App() {
             candidates={candidates} selectedId={selected} onSelect={setSelected}
             onCreate={onCreate} onAnalyze={onAnalyze} analyzing={analyzing}
           />
-          <CvViewer candidate={current} onStatus={onStatus} onDelete={onDelete} onRefresh={refresh} />
+          <CvViewer candidate={current} candidates={candidates} onStatus={onStatus} onDelete={onDelete} onRefresh={refresh} />
           <Assistant candidateId={selected} />
         </div>
         <DataMenu onChanged={() => { setSelected(getCandidates()[0]?.id ?? null); refresh() }} />

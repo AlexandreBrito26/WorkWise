@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { useI18n } from '../i18n'
+import { downloadFile, today } from '../download'
 import { exportData, importData, resetDemo } from '../store'
 
 export default function DataMenu({ onChanged }: { onChanged: () => void }) {
@@ -7,14 +8,7 @@ export default function DataMenu({ onChanged }: { onChanged: () => void }) {
   const fileRef = useRef<HTMLInputElement>(null)
   const [msg, setMsg] = useState<{ text: string; error?: boolean } | null>(null)
 
-  function download() {
-    const url = URL.createObjectURL(new Blob([exportData()], { type: 'application/json' }))
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `workwise-backup-${new Date().toISOString().slice(0, 10)}.json`
-    a.click()
-    URL.revokeObjectURL(url)
-  }
+  const download = () => downloadFile(`workwise-backup-${today()}.json`, exportData(), 'application/json')
 
   async function upload(file: File | undefined) {
     if (!file) return

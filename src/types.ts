@@ -15,6 +15,7 @@ export interface Candidate {
   skills: Skill[]
   experience: Experience[]
   summary: Record<Lang, string>
+  notes?: string
 }
 
 /** Candidato como fica salvo no navegador (inclui dados que a tela não mostra). */

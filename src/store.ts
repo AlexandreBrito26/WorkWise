@@ -50,8 +50,8 @@ export function setRequirements(role: string, list: string[]) {
 
 /** A tela só recebe os campos públicos; e-mail e texto do currículo ficam fora. */
 function toCandidate(c: StoredCandidate): Candidate {
-  const { id, name, role, score, status, skills, experience, summary } = c
-  return { id, name, role, score, status, skills, experience, summary }
+  const { id, name, role, score, status, skills, experience, summary, notes } = c
+  return { id, name, role, score, status, skills, experience, summary, notes: notes ?? '' }
 }
 
 export const getCandidates = (): Candidate[] => read().map(toCandidate)
@@ -119,6 +119,25 @@ function applyAnalysis(c: StoredCandidate): StoredCandidate {
   }
 }
 
+export function setNotes(id: string, notes: string) {
+  write(read().map((c) => (c.id === id ? { ...c, notes: notes.slice(0, 2000) } : c)))
+}
+
+/** Evita "injeção de fórmula" em planilhas: células que começam com = + - @ ganham um apóstrofo. */
+const csvCell = (v: string | number): string => {
+  let s = String(v)
+  if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`
+  return `"${s.replace(/"/g, '""')}"`
+}
+
+export function exportCsv(ids: string[]): string {
+  const wanted = new Set(ids)
+  const rows = read().filter((c) => wanted.has(c.id)).map((c) =>
+    [c.name, c.email, c.role, c.status === 'new' ? '' : c.score, c.status, c.skills.map((s) => `${s.name} ${s.match}%`).join('; ')].map(csvCell).join(','))
+  const head = ['nome', 'email', 'vaga', 'nota', 'status', 'habilidades'].map(csvCell).join(',')
+  return '\uFEFF' + [head, ...rows].join('\r\n') // BOM para o Excel reconhecer UTF-8
+}
+
 /** Reanalisa um candidato (ex.: depois de mudar os requisitos da vaga). */
 export function reanalyze(id: string) {
   write(read().map((c) => (c.id === id ? markFeedback(applyAnalysis(c)) : c)))
@@ -149,6 +168,7 @@ function parseBackup(text: string): { candidates: StoredCandidate[]; requirement
       skills: list(c.skills).map((s: Record<string, unknown>) => ({ name: str(s?.name, 60), match: Math.round(num(s?.match, 0, 100)) })).filter((s) => s.name),
       experience: list(c.experience).map((e: Record<string, unknown>) => ({ company: str(e?.company, 120), title: str(e?.title, 120), period: str(e?.period, 40) })),
       summary: { pt: str(summary.pt, 500), en: str(summary.en, 500) },
+      notes: str(c.notes, 2000),
       createdAt: num(c.createdAt, 0, Date.now()) || Date.now(),
       feedbackSentAt: typeof c.feedbackSentAt === 'number' ? num(c.feedbackSentAt, 0, Date.now() + DAY) : null,
     }

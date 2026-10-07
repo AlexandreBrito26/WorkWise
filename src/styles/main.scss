@@ -170,3 +170,9 @@ input, select, textarea { background: $surface; color: $text; }
   &__canvas { border-radius: 8px; overflow: hidden; touch-action: none; background: $surface; }
   &__legend { list-style: none; display: flex; flex-wrap: wrap; gap: 1rem; padding: 0; margin: .5rem 0 0; color: $muted; font-size: .85rem;
     li { display: flex; align-items: center; gap: .35rem; } i { width: 12px; height: 12px; border-radius: 50%; display: inline-block; } } }
+
+// ---- comparação, anotações, CSV ----
+.compare { select { padding: .4rem .6rem; border: 2px solid $bg; border-radius: 8px; } .recharts-text { fill: $muted; font-size: .8rem; }
+  .recharts-polar-grid-concentric-polygon, .recharts-polar-grid-angle line { stroke: $muted; stroke-opacity: .35; fill: none; } }
+.notes { width: 100%; padding: .5rem .6rem; border: 2px solid $bg; border-radius: 8px; resize: vertical; &:focus { border-color: $secondary; } }
+.filters .btn { grid-column: 1 / -1; }

@@ -1,16 +1,21 @@
 import { useI18n } from '../i18n'
+import { lazy, Suspense } from 'react'
 import { motion } from 'framer-motion'
+import Notes from './Notes'
 import Requirements from './Requirements'
 import type { Candidate, Status } from '../types'
 
+const Compare = lazy(() => import('./Compare'))
+
 interface Props {
   candidate: Candidate | null
+  candidates: Candidate[]
   onStatus: (id: string, s: Status) => void
   onDelete: (id: string) => void
   onRefresh: () => void
 }
 
-export default function CvViewer({ candidate: c, onStatus, onDelete, onRefresh }: Props) {
+export default function CvViewer({ candidate: c, candidates, onStatus, onDelete, onRefresh }: Props) {
   const { t, lang } = useI18n()
   if (!c) return <section className="panel cv cv--empty"><p>{t.empty}</p></section>
 
@@ -73,6 +78,9 @@ export default function CvViewer({ candidate: c, onStatus, onDelete, onRefresh }
           </ul>
         </>
       )}
+
+      <Suspense fallback={null}><Compare current={c} candidates={candidates} /></Suspense>
+      <Notes key={c.id} candidate={c} onChanged={onRefresh} />
     </motion.section>
   )
 }
