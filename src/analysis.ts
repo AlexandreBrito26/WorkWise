@@ -61,10 +61,34 @@ export interface Analysis {
 
 /**
  * Triagem por regras, 100% local (sem IA):
+ * - com requisitos definidos para a vaga: mede a aderência a eles;
  * - com habilidades já cadastradas: nota = média da compatibilidade delas;
  * - sem habilidades (texto colado ou PDF): procura termos conhecidos no currículo.
  */
-export function analyze(c: StoredCandidate): Analysis {
+const norm = (s: string) => s.trim().toLowerCase()
+
+/** Nota = média da aderência a cada requisito exigido (requisito ausente conta 0). */
+function analyzeRequirements(c: StoredCandidate, reqs: string[]): Analysis {
+  const skills: Skill[] = reqs.map((req) => {
+    const own = c.skills.find((s) => norm(s.name) === norm(req))
+    if (own) return { name: req, match: own.match }
+    const entry = Object.entries(CATALOG).find(([name]) => norm(name) === norm(req))
+    const terms = entry ? [entry[0], ...entry[1]] : [req]
+    const mentions = terms.reduce((sum, t) => sum + countMentions(c.resumeText, t), 0)
+    return { name: req, match: mentions >= 3 ? 90 : mentions === 2 ? 75 : mentions === 1 ? 60 : 0 }
+  })
+  const met = skills.filter((s) => s.match > 0).length
+  const missing = skills.filter((s) => s.match === 0).map((s) => s.name).join(', ')
+  const score = Math.round(skills.reduce((sum, s) => sum + s.match, 0) / skills.length)
+  return {
+    score, skills,
+    summaryPt: `Atende ${met} de ${skills.length} requisitos da vaga.${missing ? ` Faltam: ${missing}.` : ''}`,
+    summaryEn: `Meets ${met} of ${skills.length} job requirements.${missing ? ` Missing: ${missing}.` : ''}`,
+  }
+}
+
+export function analyze(c: StoredCandidate, reqs: string[] = []): Analysis {
+  if (reqs.length > 0) return analyzeRequirements(c, reqs)
   if (c.skills.length > 0) {
     const avg = c.skills.reduce((sum, s) => sum + s.match, 0) / c.skills.length
     return { score: Math.round(avg), skills: c.skills, summaryPt: null, summaryEn: null }

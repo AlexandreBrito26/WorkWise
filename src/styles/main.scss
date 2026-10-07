@@ -1,10 +1,29 @@
-@use 'sass:color';
 @use 'vars' as *;
 
+// ---- Temas ----
+@mixin dark-colors {
+  color-scheme: dark;
+  --primary: #9fa8ff; --on-primary: #0d1030; --brand: #283593;
+  --bg: #0e1124; --surface: #181c36; --surface-alt: #232850;
+  --text: #e8eaf6; --muted: #a3a9c8;
+  --danger: #ff8a80; --error-bg: #3b1f22;
+}
+:root {
+  color-scheme: light;
+  --primary: #1a237e; --on-primary: #fff; --brand: #1a237e;
+  --secondary: #00bcd4; --accent: #8bc34a;
+  --bg: #e5e5e5; --surface: #fff; --surface-alt: #fff;
+  --text: #1b1d2e; --muted: #5b6075;
+  --danger: #b3261e; --danger-solid: #b3261e; --error-bg: #fde7e5;
+}
+:root[data-theme='dark'] { @include dark-colors; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme='light']) { @include dark-colors; } }
+
 *, *::before, *::after { box-sizing: border-box; }
-body { margin: 0; background: $bg; color: $text; font: 400 1rem/1.5 $font-body; }
+body { margin: 0; transition: background-color .2s, color .2s; background: $bg; color: $text; font: 400 1rem/1.5 $font-body; }
 h1, h2, h3 { font-family: $font-head; margin: 0; color: $primary; }
-button, input { font: inherit; }
+button, input, select, textarea { font: inherit; }
+input, select, textarea { background: $surface; color: $text; }
 :focus-visible { outline: 3px solid $secondary; outline-offset: 2px; }
 
 .app { max-width: 1280px; margin: 0 auto; padding: 0 1rem 2rem; }
@@ -19,7 +38,7 @@ button, input { font: inherit; }
   display: inline-flex; border: 2px solid $primary; border-radius: 999px; overflow: hidden;
   button {
     border: 0; background: transparent; color: $primary; padding: .35rem .9rem; font-weight: 600; cursor: pointer;
-    &.is-active { background: $primary; color: #fff; }
+    &.is-active { background: $primary; color: $on-primary; }
   }
 }
 
@@ -28,7 +47,7 @@ button, input { font: inherit; }
   @media (max-width: $bp-md) { grid-template-columns: repeat(2, 1fr); }
 }
 .metric {
-  background: $primary; color: #fff; border-radius: $radius; padding: 1rem 1.25rem;
+  background: $brand; color: #fff; border-radius: $radius; padding: 1rem 1.25rem;
   border-bottom: 4px solid $secondary;
   strong { display: block; font: 700 2rem/1.1 $font-head; }
   span { opacity: .85; }
@@ -47,14 +66,14 @@ button, input { font: inherit; }
   width: 100%; display: grid; grid-template-columns: 1fr auto; gap: .1rem .5rem; text-align: left;
   background: $bg; border: 2px solid transparent; border-radius: 8px; padding: .65rem .75rem; cursor: pointer;
   &:hover { border-color: $secondary; }
-  &.is-selected { border-color: $primary; background: #fff; }
+  &.is-selected { border-color: $primary; background: $surface-alt; }
 }
 .list__name { font-weight: 600; }
 .list__score { grid-row: 1 / span 2; grid-column: 2; font: 700 1.25rem $font-head; color: $primary; align-self: center; }
 .list__role { color: $muted; font-size: .9rem; }
 
 .badge {
-  grid-column: 1; justify-self: start; font-size: .75rem; padding: .05rem .5rem; border-radius: 999px; background: #fff; border: 1px solid $muted; color: $muted;
+  grid-column: 1; justify-self: start; font-size: .75rem; padding: .05rem .5rem; border-radius: 999px; background: $surface; border: 1px solid $muted; color: $muted;
   &--shortlist { background: $accent; border-color: $accent; color: #1d2b0a; }
   &--review { background: $secondary; border-color: $secondary; color: #00333a; }
   &--rejected { color: $danger; border-color: $danger; }
@@ -82,12 +101,12 @@ button, input { font: inherit; }
   &__log { flex: 1; display: grid; align-content: start; gap: .5rem; max-height: 340px; overflow-y: auto; margin-bottom: .75rem; }
   &__form { display: flex; gap: .5rem;
     input { flex: 1; min-width: 0; padding: .55rem .75rem; border: 2px solid $bg; border-radius: 8px; &:focus { border-color: $secondary; } }
-    button { background: $primary; color: #fff; border: 0; border-radius: 8px; padding: 0 1rem; cursor: pointer; font-weight: 600; &:hover { background: color.adjust($primary, $lightness: -6%); } }
+    button { background: $primary; color: $on-primary; border: 0; border-radius: 8px; padding: 0 1rem; cursor: pointer; font-weight: 600; &:hover { filter: brightness(1.1); } }
   }
 }
 .msg { margin: 0; padding: .55rem .8rem; border-radius: 12px; max-width: 90%;
   &--bot { background: $bg; justify-self: start; }
-  &--user { background: $primary; color: #fff; justify-self: end; } }
+  &--user { background: $brand; color: #fff; justify-self: end; } }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 
@@ -97,10 +116,10 @@ button, input { font: inherit; }
   button { margin-left: .5rem; } }
 
 .btn {
-  background: $primary; color: #fff; border: 2px solid $primary; border-radius: 8px; padding: .4rem .9rem; font-weight: 600; cursor: pointer;
+  background: $primary; color: $on-primary; border: 2px solid $primary; border-radius: 8px; padding: .4rem .9rem; font-weight: 600; cursor: pointer;
   &:disabled { opacity: .5; cursor: not-allowed; }
   &--ghost { background: transparent; color: $primary; }
-  &--danger { background: $danger; border-color: $danger; }
+  &--danger { background: $danger-solid; border-color: $danger-solid; color: #fff; }
 }
 .actions { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: .5rem; }
 
@@ -114,7 +133,7 @@ button, input { font: inherit; }
   input, textarea { padding: .45rem .6rem; border: 2px solid $bg; border-radius: 8px; font: inherit; color: $text; &:focus { border-color: $secondary; } }
   button[type='submit'] { @extend .btn; justify-self: start; } }
 
-.msg--error { background: #fde7e5; color: $danger; }
+.msg--error { background: $error-bg; color: $danger; }
 
 // ---- ações extras ----
 .assistant__key { margin: .5rem 0; font-size: .9rem;
@@ -124,3 +143,30 @@ button, input { font: inherit; }
   small { display: block; margin-top: .35rem; color: $muted; } }
 .btn--push { margin-left: auto; }
 .newform input[type='file'] { padding: .3rem; }
+
+// ---- tema, busca e filtros ----
+.header__actions { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
+.lang button, .theme button { display: inline-flex; align-items: center; justify-content: center; }
+.theme { @extend .lang; }
+.filters { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; margin-bottom: .75rem;
+  input[type='search'] { grid-column: 1 / -1; }
+  input, select { padding: .4rem .6rem; border: 2px solid $bg; border-radius: 8px; min-width: 0; &:focus { border-color: $secondary; } } }
+
+// ---- gráficos, requisitos e dados ----
+.charts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1rem;
+  @media (max-width: $bp-md) { grid-template-columns: 1fr; }
+  figure { margin: 0; } figcaption { font: 600 1rem $font-head; color: $primary; margin-bottom: .5rem; }
+  .recharts-text { fill: $muted; font-size: .8rem; } }
+.reqs { margin-bottom: .75rem; summary { cursor: pointer; font-weight: 600; color: $primary; }
+  form { display: grid; gap: .5rem; margin-top: .5rem; }
+  label { display: grid; gap: .2rem; font-size: .9rem; color: $muted; }
+  input { padding: .45rem .6rem; border: 2px solid $bg; border-radius: 8px; &:focus { border-color: $secondary; } }
+  .btn { justify-self: start; } }
+.data { margin-top: 1rem; h2 { font-size: 1.1rem; } .actions { margin-bottom: .25rem; } }
+
+// ---- mapa de talentos (canvas) ----
+.map { margin-bottom: 1rem;
+  &__head { display: flex; align-items: center; justify-content: space-between; h2 { margin: 0; } .btn { padding: .25rem .6rem; font-size: .85rem; } }
+  &__canvas { border-radius: 8px; overflow: hidden; touch-action: none; background: $surface; }
+  &__legend { list-style: none; display: flex; flex-wrap: wrap; gap: 1rem; padding: 0; margin: .5rem 0 0; color: $muted; font-size: .85rem;
+    li { display: flex; align-items: center; gap: .35rem; } i { width: 12px; height: 12px; border-radius: 50%; display: inline-block; } } }

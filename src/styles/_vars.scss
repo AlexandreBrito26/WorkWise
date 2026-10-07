@@ -1,11 +1,17 @@
-$primary: #1A237E;
-$secondary: #00BCD4;
-$accent: #8BC34A;
-$bg: #E5E5E5;
-$surface: #ffffff;
-$text: #1b1d2e;
-$muted: #5b6075;
-$danger: #b3261e;
+// Cores vêm de variáveis CSS (definidas em main.scss) para permitir tema claro/escuro.
+$primary: var(--primary);
+$on-primary: var(--on-primary);
+$brand: var(--brand);
+$secondary: var(--secondary);
+$accent: var(--accent);
+$bg: var(--bg);
+$surface: var(--surface);
+$surface-alt: var(--surface-alt);
+$text: var(--text);
+$muted: var(--muted);
+$danger: var(--danger);
+$danger-solid: var(--danger-solid);
+$error-bg: var(--error-bg);
 
 $font-head: 'Bricolage Grotesque', system-ui, sans-serif;
 $font-body: 'Source Sans 3', system-ui, sans-serif;

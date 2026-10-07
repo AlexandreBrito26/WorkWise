@@ -1,13 +1,16 @@
 import { useI18n } from '../i18n'
+import { motion } from 'framer-motion'
+import Requirements from './Requirements'
 import type { Candidate, Status } from '../types'
 
 interface Props {
   candidate: Candidate | null
   onStatus: (id: string, s: Status) => void
   onDelete: (id: string) => void
+  onRefresh: () => void
 }
 
-export default function CvViewer({ candidate: c, onStatus, onDelete }: Props) {
+export default function CvViewer({ candidate: c, onStatus, onDelete, onRefresh }: Props) {
   const { t, lang } = useI18n()
   if (!c) return <section className="panel cv cv--empty"><p>{t.empty}</p></section>
 
@@ -15,7 +18,7 @@ export default function CvViewer({ candidate: c, onStatus, onDelete }: Props) {
   const remove = () => { if (window.confirm(t.confirmDelete)) onDelete(c.id) }
 
   return (
-    <section className="panel cv">
+    <motion.section key={c.id} className="panel cv" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
       <header className="cv__head">
         <div>
           <h2>{c.name}</h2>
@@ -33,6 +36,8 @@ export default function CvViewer({ candidate: c, onStatus, onDelete }: Props) {
         <button className="btn btn--ghost btn--push"  onClick={remove}>{t.deleteAction}</button>
       </div>
 
+      <Requirements key={c.id} candidate={c} onChanged={onRefresh} />
+
       {c.status === 'new' ? (
         <p className="state">{t.pending}</p>
       ) : (
@@ -46,7 +51,7 @@ export default function CvViewer({ candidate: c, onStatus, onDelete }: Props) {
               <li key={s.name}>
                 <span>{s.name}</span>
                 <div className="bar" role="progressbar" aria-valuenow={s.match} aria-valuemin={0} aria-valuemax={100}>
-                  <i style={{ width: `${s.match}%` }} />
+                  <motion.i initial={{ width: 0 }} animate={{ width: `${s.match}%` }} transition={{ duration: 0.5, ease: 'easeOut' }} />
                 </div>
                 <b>{s.match}%</b>
               </li>
@@ -68,6 +73,6 @@ export default function CvViewer({ candidate: c, onStatus, onDelete }: Props) {
           </ul>
         </>
       )}
-    </section>
+    </motion.section>
   )
 }
